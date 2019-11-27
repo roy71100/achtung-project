@@ -5,6 +5,7 @@ from itertools import product
 from random import randint, random
 import keyboard
 import pygame as pygame
+
 # todo make virtual size and gui size different
 snake_step_size = 3
 snake_turn_angle_size = 0.05
@@ -82,6 +83,53 @@ class Player(object):
         pass
 
 
+class AiPlayer(Player):
+    def __init__(self, board, num):
+        super().__init__(board, num)
+        self.momentum = 0
+
+    def get_move(self):
+        if self.momentum != 0:
+            move = int(self.momentum / math.fabs(self.momentum))
+            self.momentum -= move
+            return Move(move)
+
+        search_angle = 0.8
+        search_range = 200
+        momentum = 10
+        p = self.board.player_pos[self.num]
+
+        for r in range(10, search_range):
+            x = int(p.x + r * math.cos(p.angle - search_angle))
+            y = int(p.y + r * math.sin(p.angle - search_angle))
+            if not (not 0 < x < width or not 0 < y < height):
+                if self.board.board[x][y] != -1:
+                    print("detected")
+                    self.momentum += momentum
+                    return Move.RIGHT
+
+            x = int(p.x + r * math.cos(p.angle + search_angle))
+            y = int(p.y + r * math.sin(p.angle + search_angle))
+            if not (not 0 < x < width or not 0 < y < height):
+                if self.board.board[x][y] != -1:
+                    print("detected")
+                    self.momentum -= momentum
+
+                    return Move.LEFT
+
+            x = int(p.x + r * math.cos(p.angle))
+            y = int(p.y + r * math.sin(p.angle))
+            if not (not 0 < x < width or not 0 < y < height):
+                if self.board.board[x][y] != -1:
+                    print("detected")
+                    self.momentum += momentum
+
+                    return Move.RIGHT
+
+        # return Move(randint(0,2)-1)
+        return Move.STRAIGHT
+
+
 class OnPcHumanPlayer(Player):
 
     def __init__(self, board, num):
@@ -111,7 +159,9 @@ class GameGui(object):
 class Game:
     def __init__(self, player_num=3):
         self.board = Board(width=width, height=height, player_num=player_num)
-        self.players = [OnPcHumanPlayer(self.board, i) for i in range(player_num)]
+        self.players = [OnPcHumanPlayer(self.board, i) for i in range(player_num - 2)]
+        self.players.append(AiPlayer(self.board, player_num - 2))
+        self.players.append(AiPlayer(self.board, player_num - 1))
         self.score = [0 for i in range(player_num)]
         self.gameGui = GameGui(width, height)
 
@@ -170,7 +220,7 @@ class Game:
 
 
 def main():
-    game = Game(player_num=2)
+    game = Game(player_num=3)
     game.run()
 
 
