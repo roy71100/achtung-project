@@ -1,30 +1,30 @@
 import cv2
-import imutils as imutils
+import imutils
 import numpy as np
 import image_rotation
 
 # test
-green_objects = 4
-red_objects = 1
+CORNERS = 4
+CARS = 1
 cap = cv2.VideoCapture(1)
 FONT = cv2.FONT_HERSHEY_SIMPLEX
 # Creating a window for later use
 cv2.namedWindow('result')
+8
 
-
+"""
+CONVERTED
+"""
 def process_frame(frame, lower, upper):
     hsv = cv2.cvtColor(frame, cv2.COLOR_BGR2HSV)
     mask = cv2.inRange(hsv, lower, upper)
-    # except:
-    #     print("hsv")
-    #     mask = cv2.inRange(frame, lower, upper)
 
     result = cv2.bitwise_and(frame, frame, mask=mask)
 
     gray = cv2.cvtColor(result, cv2.COLOR_BGR2GRAY)
     # blurred = cv2.GaussianBlur(gray, (5, 5), 0)
     thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY)[1]
-    cv2.imshow("thresh", thresh)
+    # cv2.imshow("thresh", thresh)
     return result, thresh
 
 
@@ -54,6 +54,9 @@ def calc_centers(contours):
     return centers
 
 
+"""
+CONVERTED
+"""
 def draw_centers(centers, text, contours, pic):
     for i in range(len(centers)):
         cX, cY = centers[i]
@@ -68,9 +71,9 @@ def draw_centers(centers, text, contours, pic):
 def get_color_contours(frame, lower, upper, color):
     result, post_threshold = process_frame(frame, lower, upper)
     if color == "green":
-        color_contours = get_contours(post_threshold, green_objects)
+        color_contours = get_contours(post_threshold, CORNERS)
     elif color == "red":
-        color_contours = get_contours(post_threshold, red_objects)
+        color_contours = get_contours(post_threshold, CARS)
     return color_contours
 
 
@@ -94,18 +97,27 @@ def calc_corners(corners, frame):
     return 1
 
 
-lower_green = np.array([60, 90, 70])
-upper_green = np.array([170, 180, 255])
+# lower_green = np.array([60, 90, 70])
+# upper_green = np.array([170, 180, 255])
 
-lower_red = np.array([0, 205, 90])
-upper_red = np.array([50, 255, 150])
+# CAR
+lower_car = np.array([40, 30, 30])
+upper_car = np.array([90, 130, 190])
+
+# lower_red = np.array([0, 205, 90])
+# upper_red = np.array([50, 255, 150])
+
+# Orange infi books for corners
+lower_corner = np.array([10, 100, 50])
+upper_corner = np.array([60, 255, 255])
+
 counter = 0
 while True:
     counter += 1
     _, frame = cap.read()
     cv2.imshow("Original", frame)
 
-    corner_contours = get_color_contours(frame, lower_green, upper_green, "green")
+    corner_contours = get_color_contours(frame, lower_corner, upper_corner, "green")
 
     warped = calc_corners(corner_contours, frame)
 
@@ -113,7 +125,8 @@ while True:
         continue
 
     if not (warped is 1):
-        red_contours = get_color_contours(warped, lower_red, upper_red, "red")
+        cv2.imshow('warped', warped)
+        red_contours = get_color_contours(warped, lower_car, upper_car, "red")
 
         red_centers = calc_centers(red_contours)
 
@@ -122,7 +135,7 @@ while True:
         if counter % 50 == 0:
             shape = warped.shape
             try:
-                print(red_centers[0][0] / shape[1], red_centers[0][1] / shape[0])
+                print(red_centers[0][0] / shape[1], 1 - (red_centers[0][1] / shape[0]))
                 # print(red_centers[0][0], red_centers[0][1])
                 # print(shape)
             except:
