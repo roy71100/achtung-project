@@ -7,6 +7,28 @@ import pygame
 from players import OnPcHumanPlayer
 from ai_module import new_AI_player
 
+import numpy as np
+from matplotlib import pyplot as plt
+
+
+def printboard2(b):
+    mat = np.array([np.array(row) for row in b])
+    plt.imshow(mat * 50 + 50)
+
+def printboard(b):
+    flag = False
+    for i in range(len(b)):
+        # print('\n-', end='')
+        for j in range(len(b[i])):
+            if b[i][j] != -1:
+                print(b[i][j], end='')
+                flag = True
+            if flag:
+                print()
+                flag = False
+            # print(' ' if b[i][j] == -1 else b[i][j], end='')
+    print('\n\n')
+
 
 class PlayerPos(object):
     def __init__(self, num, board_width, board_height):
@@ -18,10 +40,13 @@ class PlayerPos(object):
         self.num = num
         self.open_counter = 0
 
-    def move(self, move):
-        self.angle += move.value * snake_turn_angle_size  # maybe error here!!!!
-        self.x = ((math.cos(self.angle)) * snake_step_size + self.x) % self.board_width
-        self.y = ((math.sin(self.angle)) * snake_step_size + self.y) % self.board_height
+    # def update(self, x, y, angle):
+    #     pass
+    #
+    # def auto_move(self, move):
+    #     self.angle += move.value * snake_turn_angle_size  # maybe error here!!!!
+    #     self.x = ((math.cos(self.angle)) * snake_step_size + self.x) % self.board_width
+    #     self.y = ((math.sin(self.angle)) * snake_step_size + self.y) % self.board_height
 
         self.open_counter -= 1
         if random() < open_probability:
@@ -41,13 +66,19 @@ class Board(object):
         self.board = [[-1 for i in range(height)] for j in range(width)]
         self.player_pos = [PlayerPos(i, width, height) for i in range(player_num)]
 
-    def move(self, moves):
-        for num, m in moves:
-            p = self.player_pos[num]
-            # print(p.x, p.y)
+    def update_colors(self, pos_to_update):
+        for i in pos_to_update:
+            p = self.player_pos[i]
             if p.open_counter <= 0:
                 self.board[int(p.x)][int(p.y)] = p.num
-            p.move(m)
+
+    # def move(self, moves):
+    #     for num, m in moves:
+    #         p = self.player_pos[num]
+    #         # print(p.x, p.y)
+    #         if p.open_counter <= 0:
+    #             self.board[int(p.x)][int(p.y)] = p.num
+    #         p.auto_move(m)
 
     def restart(self):
         for i in range(self.width):
@@ -71,6 +102,7 @@ class GameGui(object):
             else:
                 pygame.draw.circle(self.screen, (40, 40, 40), (int(x), int(y)), snake_radius)
         pygame.display.flip()
+        # printboard2(board.board)
 
 
 class Game:
@@ -95,10 +127,15 @@ class Game:
 
             self.gameGui.draw_board(self.board)
 
-            moves = [(i, self.players[i].get_move()) for i in alive]
-            self.board.move(moves)
-            dead = self.check_dead(alive)
+            for i in alive:
+                self.players[i].update_position()
+                self.board.update_colors(list(range(len(self.players))))
 
+            # moves = [(i, self.players[i].get_move()) for i in alive]
+            # self.board.move(moves)
+
+            # todo fix death bug and uncomment  this piece of code:
+            dead = self.check_dead(alive)
             if dead:
                 for i in dead:
                     alive.remove(i)
@@ -124,7 +161,7 @@ class Game:
                 for x, y in self.circle_points:
                     # a bit inefficient but i don't think it has big impact
 
-                    # peice of code that is bugged ): dont think it is smart to waist more time here
+                    # piece of code that is bugged ): dont think it is smart to waist more time here
                     # if math.fabs(math.atan(y/x) - p.angle) < (6.28 / 3)\
                     #         or math.fabs(math.atan(y/x) - p.angle - 6.28) < (6.28 / 3):
 
@@ -140,3 +177,5 @@ class Game:
 
     def run(self):
         self.play_round()
+
+

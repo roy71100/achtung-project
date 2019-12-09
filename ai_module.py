@@ -1,13 +1,13 @@
 import math
 from consts import *
-from players import Player
+from players import VirtualPlayer
 
 
 def new_AI_player(board, num):
     return AdvancedAI(board, num)
 
 
-class AiPlayer(Player):
+class BasicAI(VirtualPlayer):
     def __init__(self, board, num):
         super().__init__(board, num)
         self.momentum = 0
@@ -54,17 +54,17 @@ class AiPlayer(Player):
         return Move.STRAIGHT
 
 
-class AdvancedAI(AiPlayer):
+class AdvancedAI(BasicAI):
     def __init__(self, board, num):
         super().__init__(board, num)
         self.momentum = 0
 
     def get_move(self):
-        print(self.momentum)
+        # print(self.momentum)
 
         search_angle = math.pi
         search_range = 200
-        mmnt_bonus = 5
+        mmnt_bonus = 3
         max_mmnt = 15
 
         for factor in [x / 10 for x in [-10, -9, -8, -3, -2.5,  -2, -1, 1, 2, 2.5, 3, 5, 8, 9, 10]]:
@@ -90,10 +90,13 @@ class AdvancedAI(AiPlayer):
     def collision_maneuver(self, search_range, search_angle, momentum, r_min=10):
         p = self.get_pos()
         for r in range(r_min, int(search_range)):
-            x = int(p.x + r * math.cos(p.angle + search_angle)) % width
-            y = int(p.y + r * math.sin(p.angle + search_angle)) % height
-            if self.board.board[x][y] != -1:
-                self.momentum += (1 - r / search_range) * momentum
+            x0 = int(p.x + r * math.cos(p.angle + search_angle)) % width
+            y0 = int(p.y + r * math.sin(p.angle + search_angle)) % height
+            for pixel in [self.board.board[x % width][y % height]
+                          for x in range(x0-1, x0+2) for y in range(y0-1, y0+2)]:
+                if pixel != -1:
+                    self.momentum += (1 - r / search_range) * momentum
+                    return
 
     def flanking_maneuver(self):
         ops = self.board.player_pos
@@ -103,9 +106,9 @@ class AdvancedAI(AiPlayer):
 
     def flanking_maneuver_on_opponent(self, other_pos):
         mmnt_bonus = 15
-        max_dist = 100
+        max_dist = 250
         param2 = 0.1
-        param3 = 0.3
+        param3 = 0.4
 
         p = self.get_pos()
 
@@ -126,7 +129,4 @@ class AdvancedAI(AiPlayer):
                 vec_mult = self_spd_vec[0] * other_spd_vec[1] - self_spd_vec[1] * other_spd_vec[0]
                 if abs(vec_mult) < param3:
                     self.momentum += - math.copysign(mmnt_bonus, vec_mult)
-                    print(f'flanking {Move(- math.copysign(1, vec_mult))}\tmult={mult:.2f}')
-
-    def get_pos(self):
-        return self.board.player_pos[self.num]
+                    # print(f'flanking {Move(- math.copysign(1, vec_mult))}\tmult={mult:.2f}')
