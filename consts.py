@@ -22,3 +22,11 @@ class Move(Enum):
     LEFT = -1
     STRAIGHT = 0
 
+    UNRIGHT = 10
+    UNLEFT = -10
+
+    FORWARD = 20
+    BACKWARD = 21
+    STOP = 30
+
+

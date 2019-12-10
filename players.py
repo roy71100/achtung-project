@@ -23,8 +23,9 @@ class VirtualPlayer(Player):
     def get_move(self):
         pass
 
-    def update_position(self):
-        move = self.get_move()
+    def update_position(self, move=None):
+        if move is None:
+            move = self.get_move()
         p = self.get_pos()
         p.angle += move.value * snake_turn_angle_size  # maybe error here!!!!
         p.x = int(p.x + cos(p.angle) * snake_step_size) % p.board_width
@@ -33,6 +34,8 @@ class VirtualPlayer(Player):
         p.open_counter -= 1
         if random() < open_probability:
             p.open_counter = open_step_num
+
+        return move
 
 
 class OnPcHumanPlayer(VirtualPlayer):
