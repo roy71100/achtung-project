@@ -92,6 +92,9 @@ class Board(object):
 
 class Game:
     def __init__(self, real_p_num=1, ai_p_num=3):
+
+
+
         player_num = real_p_num + ai_p_num
         self.board = Board(width=width, height=height, player_num=player_num)
 
@@ -131,6 +134,7 @@ class Game:
                 time_to_wait = time_per_frame - passed_time
                 # pygame.time.delay(int(1000 * time_to_wait))asddddddddddddddddddddddddddddddddddddddddddddd
                 time.sleep(time_to_wait)
+                print("fps = " + str(1 / passed_time))
             else:
                 print("fps = " + str(1/passed_time))
 

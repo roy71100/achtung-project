@@ -6,7 +6,7 @@ _, _, lower_corner, upper_corner, _ = init_constants.init()
 RESOLUTION = 700
 lower_projection = (0, 0, 70)
 upper_projection = (180, 45, 155)
-
+homography = [0]
 
 def show_full_screen(frame):
     cv2.namedWindow("window", cv2.WND_PROP_FULLSCREEN)
@@ -54,22 +54,13 @@ def automated_corner_detection():
         if k == 27:
             break
 
-    print
 
-
-def stretch_projection(image, horizontal_factor, vertical_factor):
-    """
-    Takes an image and warps it so it looks normal after projecting by an angle.
-    :param image: opencv2 image opject (BGR format).
-    :param horizontal_factor: the horizontal factor to compress the upper part by.
-    :param vertical_factor: The vertical factor to compress lower part by.
-    :return opencv2 image object (BGR) of the transformed image.
-    """
-    im = image
+def calculate_projection(width, height):
     # im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
     # print(im)
-    dst = np.zeros(im.shape, dtype=np.uint8)
-    (height, width, channels) = im.shape
+    channels = 3
+    s = (width, height, channels)
+    # dst = np.zeros(s, dtype=np.uint8)
     # a, b = input("enter the horizontal and vertical factors (0-100):\n").split(",")
     # alpha = 1 - float(a)/100
     # beta = 1 - float(b)/100
@@ -88,22 +79,59 @@ def stretch_projection(image, horizontal_factor, vertical_factor):
     pDst = [(up_right_x, upper_y), (width - up_left_x, upper_y), (0, height - lower_dist_from_floor),
             (width, height - lower_dist_from_floor)]
 
-    imD = im.copy()
-    dstD = dst.copy()
+    # imD = im.copy()
+    # dstD = dst.copy()
     # for p in pSrc:
     #     cv2.circle(imD, p, 2, (255, 0, 0), -1)
     # for p in pDst:
     #     cv2.circle(dstD, p, 2, (255, 0, 0), -1)
-    H = cv2.findHomography(np.array(pSrc, dtype=np.float32), np.array(pDst, dtype=np.float32), cv2.LMEDS)
-    dstD = cv2.warpPerspective(imD, H[0], (dstD.shape[1], dstD.shape[0]))
+    global homography
+    homography = cv2.findHomography(np.array(pSrc, dtype=np.float32), np.array(pDst, dtype=np.float32), cv2.LMEDS)
+
+
+def stretch_projection(im, homography):
+    """
+    Takes an image and warps it so it looks normal after projecting by an angle.
+    :param image: opencv2 image opject (BGR format).
+    :param horizontal_factor: the horizontal factor to compress the upper part by.
+    :param vertical_factor: The vertical factor to compress lower part by.
+    :return opencv2 image object (BGR) of the transformed image.
+    """
+    dstD = cv2.warpPerspective(im, homography[0], (im.shape[1], im.shape[0])) # TODO: mendi it is weird shapes are opposite here is it on purpose?
+    return dstD
+    # im = cv2.cvtColor(im, cv2.COLOR_BGR2RGB)
+    # print(im)
+    # dst = np.zeros(im.shape, dtype=np.uint8)
+    # (height, width, channels) = im.shape
+    # a, b = input("enter the horizontal and vertical factors (0-100):\n").split(",")
+    # alpha = 1 - float(a)/100
+    # beta = 1 - float(b)/100
+    # (x,y)
+    # upper left, upper right, lower left, lower right
+    # # pDst = [(int(width * alpha), 0), (int(width*(1 - alpha)), 0), (int(width * alpha), int(height*beta)), (int(width*(1 - alpha)), int(height*beta))]
+    # # pDst = [(21, 0), (width - 21, 0), (0, height-200),
+    # #         (width, height - 200)]
+    # # width_shrink = int(((horizontal_factor / 100) / 2) * width)
+    # # height_shrink = int((vertical_factor / 100) * height)
+    # lower_dist_from_floor = 200
+    # up_left_x = 100
+    # up_right_x = 140
+    # upper_y = 50
+    # pDst = [(up_right_x, upper_y), (width - up_left_x, upper_y), (0, height - lower_dist_from_floor),
+    #         (width, height - lower_dist_from_floor)]
+
+    # imD = im.copy()
+    # for p in pSrc:
+    #     cv2.circle(imD, p, 2, (255, 0, 0), -1)
+    # for p in pDst:
+    #     cv2.circle(dstD, p, 2, (255, 0, 0), -1)
     # M = cv2.getRotationMatrix2D((width/2, height/2), 180, 1.0)
     # dstD = cv2.warpAffine(dstD, M, (dstD.shape[1], dstD.shape[0]))
-    return dstD
 
 
 def show_projection(frame_to_project):
-    projected = stretch_projection(frame_to_project, 30, 70)
-    projected = cv2.flip(projected, 0)
+    projected = stretch_projection(frame_to_project, homography)
+    projected = cv2.flip(projected, 0) # todo: VERY IMPORTANT - put this in holomography so we wont need this cuz it slow code MUCH/////
     # Display the resulting frame
     cv2.namedWindow("window", cv2.WND_PROP_FULLSCREEN)
     cv2.setWindowProperty("window", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
