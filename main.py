@@ -2,6 +2,7 @@ import cv2
 import camera_object
 import numpy as np
 import init_constants
+import proj
 
 lower_car, upper_car, lower_corner, upper_corner, SLOW_RATIO = init_constants.init()
 car = camera_object.Car(lower_car, upper_car, "CAR 1")
@@ -12,7 +13,8 @@ cap = cv2.VideoCapture(1)
 counter = 0
 
 RESOLUTION = 500
-
+white = 255 * np.ones((RESOLUTION, RESOLUTION, 3))
+count_errors = 0
 while True:
     counter += 1
     _, frame = cap.read()
@@ -20,6 +22,7 @@ while True:
 
     corner_contours, corner_centers = corners[0].find_corners(frame)
     # print(corner_contours)
+    count_errors += 1
     if corner_centers is 0:
         continue
     for i in range(len(corner_centers)):
@@ -34,12 +37,28 @@ while True:
 
     car.find_car(warped)
     car.draw(warped)
-
+    if car.contour is 0:
+        if count_errors > 100:
+            proj.show_full_screen(white)
+            k = cv2.waitKey(5) & 0xFF
+            continue
+        count_errors += 1
+        continue
+    else:
+        if cv2.contourArea(car.contour) < 5:
+            if count_errors > 100:
+                proj.show_full_screen(white)
+                k = cv2.waitKey(5) & 0xFF
+                count_errors += 1
+                continue
+            count_errors += 1
+            continue
+    count_errors = 0
     if counter % SLOW_RATIO == 0:
         shape = warped.shape
         try:
-            relative_x = car.x_location / shape[1]
-            relative_y = 1 - (car.y_location / shape[0])
+            relative_x = 1 - car.x_location / shape[1]
+            relative_y = (car.y_location / shape[0])
             # print(relative_x, relative_y)
 
             game_board = np.zeros((RESOLUTION, RESOLUTION, 3))
@@ -47,9 +66,14 @@ while True:
             x = int(np.floor(RESOLUTION * relative_x))
             y = int(np.floor(RESOLUTION * relative_y))
             # print(x, y)
-            cv2.circle(game_board, (x, y), 7, (0, 0, 255), -1)
+            cv2.circle(game_board, (x, y), 70, (255, 255, 255), -1)
+            cv2.circle(game_board, (0, RESOLUTION - 50), 70, (255, 255, 255), -1)
+            cv2.circle(game_board, (0, 0), 70, (255, 255, 255), -1)
+            cv2.circle(game_board, (RESOLUTION-1, 0), 70, (255, 255, 255), -1)
+            cv2.circle(game_board, (RESOLUTION-1, RESOLUTION-1), 70, (255, 255, 255), -1)
 
-            cv2.imshow('gameboard', game_board)
+            proj.show_projection(game_board)
+            # cv2.imshow('gameboard', game_board)
         except Exception as a:
             print(a)
 

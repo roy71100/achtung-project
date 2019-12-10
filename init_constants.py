@@ -11,12 +11,20 @@ def init():
     # upper_car = np.array([50, 255, 230])
 
     # CAR
-    lower_car = np.array([40, 30, 30])
-    upper_car = np.array([90, 130, 190])
+    # lower_car = np.array([40, 30, 30])
+    # upper_car = np.array([90, 130, 190])
 
     # Orange infi books for corners
-    lower_corner = np.array([10, 100, 50])
-    upper_corner = np.array([60, 255, 255])
+    # lower_corner = np.array([10, 100, 50])
+    # upper_corner = np.array([60, 255, 255])
+
+    # Orange in light
+    lower_corner = np.array([10, 55, 90])
+    upper_corner = np.array([30, 200, 200])
+
+    # Green car in light
+    lower_car = np.array([45, 60, 50])
+    upper_car = np.array([90, 140, 140])
 
     SLOW_RATIO = 1
 
