@@ -3,7 +3,7 @@ from enum import Enum
 snake_step_size = 3
 snake_turn_angle_size = 0.05
 
-max_fps = 40
+max_fps = 30
 time_per_frame = 1 / max_fps
 
 width = 1000

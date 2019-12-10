@@ -111,7 +111,7 @@ class Game:
         self.players = [OnPcHumanPlayer(self.board, i) for i in range(player_num - 2)]
         self.players.append(new_AI_player(self.board, player_num - 2))
         self.players.append(new_AI_player(self.board, player_num - 1))
-        self.score = [0 for i in range(player_num)]
+        self.score = [0 for _ in range(player_num)]
         self.gameGui = GameGui(width, height)
 
         self.circle_points = []
@@ -129,12 +129,11 @@ class Game:
 
             for i in alive:
                 self.players[i].update_position()
-                self.board.update_colors(list(range(len(self.players))))
+                self.board.update_colors(alive)  # list(range(len(self.players))))
 
             # moves = [(i, self.players[i].get_move()) for i in alive]
             # self.board.move(moves)
 
-            # todo fix death bug and uncomment  this piece of code:
             dead = self.check_dead(alive)
             if dead:
                 for i in dead:
@@ -165,12 +164,13 @@ class Game:
                     # if math.fabs(math.atan(y/x) - p.angle) < (6.28 / 3)\
                     #         or math.fabs(math.atan(y/x) - p.angle - 6.28) < (6.28 / 3):
 
-                    x = int(p.x + x + snake_radius * math.cos(p.angle))
-                    y = int(p.y + y + snake_radius * math.sin(p.angle))
+                    x = int(p.x + x + 2*snake_radius * math.cos(p.angle))
+                    y = int(p.y + y + 2*snake_radius * math.sin(p.angle))
                     if not 0 < x < width or not 0 < y < height:
                         continue
+                    temptemptempdeletethis = self.board.board[x][y]
                     if self.board.board[x][y] != -1:
-                        print("player " + str(p.num) + " has fallen.")
+                        print(f"Player {p.num} has fallen, got stuck in {temptemptempdeletethis}'s trail.")
                         dead.append(p.num)
                         break
         return dead
