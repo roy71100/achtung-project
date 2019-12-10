@@ -2,8 +2,9 @@ import math
 import time
 from itertools import product
 from random import randint, random
+
+from GameGui import GameGui
 from consts import *
-import pygame
 from players import OnPcHumanPlayer
 from ai_module import new_AI_player
 
@@ -59,18 +60,18 @@ class PlayerPos(object):
 
 
 class Board(object):
-    def __init__(self, width=1000, height=700, player_num=3):
+    def __init__(self, width=700, height=700, player_num=3):
         self.height = height
         self.width = width
         self.player_num = player_num
-        self.board = [[-1 for i in range(height)] for j in range(width)]
+        self.board = np.array([[-1 for i in range(height)] for j in range(width)])
         self.player_pos = [PlayerPos(i, width, height) for i in range(player_num)]
 
     def update_colors(self, pos_to_update):
         for i in pos_to_update:
             p = self.player_pos[i]
             if p.open_counter <= 0:
-                self.board[int(p.x)][int(p.y)] = p.num
+                self.board[int(p.x),int(p.y)] = p.num
 
     # def move(self, moves):
     #     for num, m in moves:
@@ -83,26 +84,12 @@ class Board(object):
     def restart(self):
         for i in range(self.width):
             for j in range(self.height):
-                self.board[i][j] = -1
+                self.board[i, j] = -1
         for p in self.player_pos:
             p.put_random_pos(self.width, self.height)
 
 
-class GameGui(object):
-    def __init__(self, width, height):
-        pygame.init()
-        self.screen = pygame.display.set_mode((width, height))
 
-    def draw_board(self, board):
-        pygame.event.get()
-        for p in board.player_pos:
-            x, y = p.x, p.y
-            if p.open_counter <= 0:
-                pygame.draw.circle(self.screen, colors[p.num], (int(x), int(y)), snake_radius)
-            else:
-                pygame.draw.circle(self.screen, (40, 40, 40), (int(x), int(y)), snake_radius)
-        pygame.display.flip()
-        # printboard2(board.board)
 
 
 class Game:
