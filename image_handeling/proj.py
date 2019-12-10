@@ -1,7 +1,6 @@
 import cv2 as cv2
 import numpy as np
-import camera_object
-import init_constants
+from image_handeling import camera_object, init_constants
 
 _, _, lower_corner, upper_corner, _ = init_constants.init()
 RESOLUTION = 700

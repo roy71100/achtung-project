@@ -1,13 +1,15 @@
 from enum import Enum
 
+import numpy as np
+
 snake_step_size = 3
 snake_turn_angle_size = 0.05
 
-max_fps = 30
-time_per_frame = 1 / max_fps
+max_fps = 60
+time_per_frame = 1.0 / max_fps
 
-width = 1000
-height = 550
+width = 700
+height = 700
 
 snake_radius = 5
 open_step_num = 10
