@@ -4,7 +4,7 @@ from game import Game
 
 def main():
 
-    game = Game(real_p_num=1, ai_p_num=2)
+    game = Game(real_p_num=1, ai_p_num=0)
     game.run()
 
 

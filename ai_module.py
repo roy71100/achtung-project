@@ -9,8 +9,8 @@ def new_AI_player(board, num):
 
 
 class BasicAI(VirtualPlayer):
-    def __init__(self, board, num):
-        super().__init__(board, num)
+    def __init__(self, game, num):
+        super().__init__(game, num)
         self.momentum = 0
 
     def get_move(self):
@@ -56,8 +56,8 @@ class BasicAI(VirtualPlayer):
 
 
 class AdvancedAI(VirtualPlayer):
-    def __init__(self, board, num):
-        super().__init__(board, num)
+    def __init__(self, game, num):
+        super().__init__(game, num)
         self.momentum = 0
 
     def get_move(self):
@@ -132,8 +132,8 @@ class AdvancedAI(VirtualPlayer):
 
 
 class AdvancedAI2(BasicAI):
-    def __init__(self, board, num):
-        super().__init__(board, num)
+    def __init__(self, game, num):
+        super().__init__(game, num)
         self.momentum = 0
 
     def get_move(self):

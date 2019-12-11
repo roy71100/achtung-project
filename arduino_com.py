@@ -2,11 +2,13 @@ from time import sleep
 import serial
 from consts import Move
 
-CODE_DOCT={"B":1,"F":2,"L":3,"R":4,"B_R":5,"F_R":6,"L_R":7,"R_R":8}
+CODE_DOCT = {"B": 1, "F": 2, "L": 3, "R": 4, "B_R": 5, "F_R": 6, "L_R": 7, "R_R": 8}
 DELAY = 0.0
 from pynput.keyboard import Key, Listener
-PRESSED_DICT={"B":0,"F":0,"L":0,"R":0}
+
+PRESSED_DICT = {"B": 0, "F": 0, "L": 0, "R": 0}
 ser = None
+
 
 def initialize():
     global ser
@@ -15,8 +17,11 @@ def initialize():
     print("Opened")
     print("Listening...")
 
+
 def send_command(move):
-    if move == Move.RIGHT and PRESSED_DICT["R"]==0:
+    # return
+
+    if move == Move.RIGHT and PRESSED_DICT["R"] == 0:
         PRESSED_DICT["R"] = 1
         ser.write(bytes([CODE_DOCT["R"]]))
 
@@ -47,4 +52,3 @@ def send_command(move):
     if move == Move.UNLEFT and PRESSED_DICT["L"] == 1:
         PRESSED_DICT["L"] = 0
         ser.write(bytes([CODE_DOCT["L_R"]]))
-

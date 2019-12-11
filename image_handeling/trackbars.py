@@ -89,7 +89,7 @@ while True:
     frame_threshold = cv.inRange(frame_HSV, (low_H, low_S, low_V), (high_H, high_S, high_V))
 
     cv.imshow(window_capture_name, frame)
-    cv.imshow(window_detection_name, frame_threshold)
+    cv.imshow("processed", frame_threshold)
 
     key = cv.waitKey(30)
     if key == ord('q') or key == 27:

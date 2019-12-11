@@ -12,7 +12,7 @@ class Camera:
     RESOLUTION = 500
     cap = cv2.VideoCapture(1)
     lower_corner = np.array([10, 55, 90])
-    upper_corner = np.array([30, 200, 200])
+    upper_corner = np.array([30, 255, 200])
 
     def __init__(self):
         # Orange in light
@@ -29,6 +29,9 @@ class Camera:
         return corners, corner_contours, corner_centers
 
     def get_location(self, car_index):
+        self.counter += 1
+        if self.counter % 200 == 0:
+            self.corners, self.corner_contours, self.corner_centers = self.init_corners()
         car = self.cars[car_index]
         _, frame = self.cap.read()
         warped = camera_object.Corner.warp_if_possible(self.corners, frame)
@@ -36,7 +39,9 @@ class Camera:
             return -1
         car.find_car(warped)
         shape = warped.shape
-        relative_x = 1 - car.x_location / shape[1]
+        if car.x_location < 0 or car.y_location < 0:
+            return 0.5, 0.5
+        relative_x = 1 - (car.x_location / shape[1])
         relative_y = (car.y_location / shape[0])
         return relative_x, relative_y
 

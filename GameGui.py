@@ -28,5 +28,7 @@ class GameGui(object):
 
 
         k = cv2.waitKey(5) & 0xFF
+        if k == 27:
+            exit()
         # cv2.imshow("screen", self.screen)
         show_projection(self.screen)

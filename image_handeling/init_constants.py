@@ -20,7 +20,7 @@ def init():
 
     # Orange in light
     lower_corner = np.array([10, 55, 90])
-    upper_corner = np.array([30, 200, 200])
+    upper_corner = np.array([30, 255, 200])
 
     # Green car in light
     lower_car = np.array([45, 60, 50])

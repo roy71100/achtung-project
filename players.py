@@ -1,29 +1,32 @@
+import keyboard as keyboard
+
 from consts import *
 from math import cos, sin
 from random import random
-import keyboard
+
 
 
 class Player:
-    def __init__(self, board, num):
+    def __init__(self, game, num):
         self.num = num
-        self.board = board
+        self.board = game.board
+        self.camera = game.camera
 
     def get_pos(self):
         return self.board.player_pos[self.num]
 
-    def update_position(self):
+    def do_step(self):
         pass
 
 
 class VirtualPlayer(Player):
-    def __init__(self, board, num):
-        super().__init__(board, num)
+    def __init__(self, game, num):
+        super().__init__(game, num)
 
     def get_move(self):
         pass
 
-    def update_position(self, move=None):
+    def do_step(self, move=None):
         if move is None:
             move = self.get_move()
         p = self.get_pos()
@@ -40,8 +43,8 @@ class VirtualPlayer(Player):
 
 class OnPcHumanPlayer(VirtualPlayer):
 
-    def __init__(self, board, num):
-        super().__init__(board, num)
+    def __init__(self, game, num):
+        super().__init__(game, num)
 
     def get_move(self):
         if keyboard.is_pressed(keys[self.num][0]):

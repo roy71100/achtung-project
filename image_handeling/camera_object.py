@@ -103,6 +103,7 @@ class Car(CameraObject):
         :param frame: A frame that may contain current car.
         :return: None
         """
+        cv2.imshow("test", frame)
         threshold = self.activate_mask_threshold(frame)
         self.contour = CameraObject.find_contours(threshold, 1)
         if not (self.contour is 0):

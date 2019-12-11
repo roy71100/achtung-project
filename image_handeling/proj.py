@@ -72,10 +72,10 @@ def calculate_projection(width, height):
     #         (width, height - 200)]
     # width_shrink = int(((horizontal_factor / 100) / 2) * width)
     # height_shrink = int((vertical_factor / 100) * height)
-    lower_dist_from_floor = 200
-    up_left_x = 100
-    up_right_x = 140
-    upper_y = 50
+    lower_dist_from_floor = 260
+    up_left_x = 120
+    up_right_x = 170
+    upper_y = 60
     pDst = [(up_right_x, upper_y), (width - up_left_x, upper_y), (0, height - lower_dist_from_floor),
             (width, height - lower_dist_from_floor)]
 

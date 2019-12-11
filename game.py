@@ -11,6 +11,9 @@ from ai_module import new_AI_player, BasicAI
 import numpy as np
 from matplotlib import pyplot as plt
 
+import image_handeling.camera
+from real_world_players import RealWorldPCHuman
+
 
 def printboard2(b):
     mat = np.array([np.array(row) for row in b])
@@ -93,13 +96,15 @@ class Board(object):
 class Game:
     def __init__(self, real_p_num=1, ai_p_num=3):
 
-
+        self.camera = image_handeling.camera.Camera()
+        # self.camera = None
 
         player_num = real_p_num + ai_p_num
         self.board = Board(width=width, height=height, player_num=player_num)
 
-        self.players = [OnPcHumanPlayer(self.board, i) for i in range(real_p_num)]
-        self.players += [BasicAI(self.board, real_p_num + i) for i in range(ai_p_num)]
+        self.players = [RealWorldPCHuman(self, i) for i in range(real_p_num)]
+        # self.players = [OnPcHumanPlayer(self, i) for i in range(real_p_num)]
+        # self.players += [BasicAI(self, real_p_num + i) for i in range(ai_p_num)]
 
         self.score = [0 for _ in range(player_num)]
         self.gameGui = GameGui(width, height)
@@ -112,13 +117,13 @@ class Game:
     def play_round(self):
         self.restart_round()
         alive = [*range(len(self.players))]
-        while len(alive) > 1:
+        while len(alive) >= 1: # TODO remember to change back to >
             t = time.time()
 
             self.gameGui.draw_board(self.board)
 
             for i in alive:
-                self.players[i].update_position()
+                self.players[i].do_step()
                 self.board.update_colors(alive)  # list(range(len(self.players))))
 
             # moves = [(i, self.players[i].get_move()) for i in alive]
@@ -127,21 +132,22 @@ class Game:
             dead = self.check_dead(alive)
             if dead:
                 for i in dead:
-                    alive.remove(i)
+                    break
+                    # alive.remove(i)
 
             passed_time = time.time() - t
             if passed_time < time_per_frame:
                 time_to_wait = time_per_frame - passed_time
-                # pygame.time.delay(int(1000 * time_to_wait))asddddddddddddddddddddddddddddddddddddddddddddd
+                # pygame.time.delay(int(1000 * time_to_wait))
                 time.sleep(time_to_wait)
                 print("fps = " + str(1 / passed_time))
             else:
-                print("fps = " + str(1/passed_time))
+                print("fps = " + str(1 / passed_time))
 
-        if len(alive) > 0:
-            print(f'Game over, Player {alive[0]} won!')
-        else:
-            print(f'Error - no players left alive')
+        # if len(alive) > 0:
+        #     print(f'Game over, Player {alive[0]} won!')
+        # else:
+        #     print(f'Error - no players left alive')
 
     def restart_round(self):
         self.board.restart()
