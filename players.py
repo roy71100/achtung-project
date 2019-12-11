@@ -45,10 +45,16 @@ class OnPcHumanPlayer(VirtualPlayer):
 
     def __init__(self, game, num):
         super().__init__(game, num)
+        self.flag = False  # todo remove flag
 
     def get_move(self):
+        if keyboard.is_pressed('w') and not self.flag:
+            print('w pressed')
+            self.flag = True
         if keyboard.is_pressed(keys[self.num][0]):
             return Move.LEFT
         elif keyboard.is_pressed(keys[self.num][1]):
             return Move.RIGHT
-        return Move.STRAIGHT
+        elif keyboard.is_pressed('s') or not self.flag:  # todo remove this
+            return Move.STOP
+        return Move.FORWARD

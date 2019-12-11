@@ -2,7 +2,7 @@ import math
 import time
 from itertools import product
 from random import randint, random
-
+import arduino_com
 from GameGui import GameGui
 from consts import *
 from players import OnPcHumanPlayer
@@ -96,15 +96,19 @@ class Board(object):
 class Game:
     def __init__(self, real_p_num=1, ai_p_num=3):
 
-        self.camera = image_handeling.camera.Camera()
-        # self.camera = None
+        if not DEBUG_NO_CV:
+            self.camera = image_handeling.camera.Camera()
+        else:
+            self.camera = None
+
+        arduino_com.initialize()
 
         player_num = real_p_num + ai_p_num
         self.board = Board(width=width, height=height, player_num=player_num)
 
-        self.players = [RealWorldPCHuman(self, i) for i in range(real_p_num)]
-        # self.players = [OnPcHumanPlayer(self, i) for i in range(real_p_num)]
-        # self.players += [BasicAI(self, real_p_num + i) for i in range(ai_p_num)]
+        # self.players = [RealWorldPCHuman(self, i) for i in range(real_p_num)]
+        self.players = [OnPcHumanPlayer(self, i) for i in range(real_p_num)]
+        self.players += [new_AI_player(self, real_p_num + i) for i in range(ai_p_num)]
 
         self.score = [0 for _ in range(player_num)]
         self.gameGui = GameGui(width, height)
@@ -140,9 +144,10 @@ class Game:
                 time_to_wait = time_per_frame - passed_time
                 # pygame.time.delay(int(1000 * time_to_wait))
                 time.sleep(time_to_wait)
-                print("fps = " + str(1 / passed_time))
-            else:
-                print("fps = " + str(1 / passed_time))
+                passed_time += 0.00001
+            #     print("fps = " + str(1 / passed_time))
+            # else:
+            #     print("fps = " + str(1 / passed_time))
 
         # if len(alive) > 0:
         #     print(f'Game over, Player {alive[0]} won!')

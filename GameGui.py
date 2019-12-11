@@ -1,7 +1,7 @@
 import numpy as np
 from cv2 import cv2
 
-from consts import snake_radius, colors
+from consts import snake_radius, colors, DEBUG_NO_PROJ
 from image_handeling import proj
 from image_handeling.proj import show_projection
 
@@ -13,7 +13,8 @@ class GameGui(object):
 
     def __init__(self, width, height):
         print (width,height)
-        proj.calculate_projection(width, height)
+        if not DEBUG_NO_PROJ:
+            proj.calculate_projection(width, height)
         self.screen = 255 * np.ones((width, height, 3))
         self.screen[:,:,1] = 200
 

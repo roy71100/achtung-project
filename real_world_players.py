@@ -13,7 +13,9 @@ class BasicRealWorldPlayer(Player):
 
     def do_step(self):
         new_x, new_y = self.camera.get_location(self.num)
-        print(new_x, new_y)
+        # print(new_x, new_y)
+        if new_x <= 0 or new_y <= 0 or new_x >=1 or new_y >= 1:
+            return
         new_x = int(new_x * self.board.width)
         new_y = int(new_y * self.board.height)
         old_p = self.get_pos()
@@ -53,6 +55,9 @@ class RealWorldPCHuman(BasicRealWorldPlayer):
         self.last_move = None
         send_command(Move.FORWARD)
 
+    def __del__(self):
+        send_command(Move.STOP)
+
     def get_move(self):
         return self.Human.get_move()
 
@@ -65,3 +70,4 @@ class RealWorldPCHuman(BasicRealWorldPlayer):
             if self.last_move == Move.LEFT:
                 send_command(Move.UNLEFT)
             send_command(move)
+            self.last_move = move

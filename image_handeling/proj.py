@@ -1,5 +1,7 @@
 import cv2 as cv2
 import numpy as np
+
+from consts import DEBUG_NO_PROJ
 from image_handeling import camera_object, init_constants
 
 _, _, lower_corner, upper_corner, _ = init_constants.init()
@@ -130,8 +132,10 @@ def stretch_projection(im, homography):
 
 
 def show_projection(frame_to_project):
-    projected = stretch_projection(frame_to_project, homography)
-    projected = cv2.flip(projected, 0) # todo: VERY IMPORTANT - put this in holomography so we wont need this cuz it slow code MUCH/////
+    projected = frame_to_project
+    if not DEBUG_NO_PROJ:
+        projected = stretch_projection(frame_to_project, homography)
+        projected = cv2.flip(projected, 0) # todo: VERY IMPORTANT - put this in holomography so we wont need this cuz it slow code MUCH/////
     # Display the resulting frame
     cv2.namedWindow("window", cv2.WND_PROP_FULLSCREEN)
     cv2.setWindowProperty("window", cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)

@@ -52,7 +52,7 @@ class BasicAI(VirtualPlayer):
                     return Move.RIGHT
 
         # return Move(randint(0,2)-1)
-        return Move.STRAIGHT
+        return Move.FORWARD
 
 
 class AdvancedAI(VirtualPlayer):
@@ -76,7 +76,7 @@ class AdvancedAI(VirtualPlayer):
             move = copysign(1, self.momentum)
             self.momentum -= move
             return Move(move)
-        return Move.STRAIGHT
+        return Move.FORWARD
 
     '''
     Checks whether a maneuver is required to avoid collision in given direction.
@@ -152,7 +152,7 @@ class AdvancedAI2(BasicAI):
             move = copysign(1, self.momentum)
             self.momentum -= move
             return Move(move)
-        return Move.STRAIGHT
+        return Move.FORWARD
 
     '''
     Checks whether a maneuver is required to avoid collision in given direction.

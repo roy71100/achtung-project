@@ -30,7 +30,7 @@ class Camera:
 
     def get_location(self, car_index):
         self.counter += 1
-        if self.counter % 200 == 0:
+        if self.counter % 30 == 0:
             self.corners, self.corner_contours, self.corner_centers = self.init_corners()
         car = self.cars[car_index]
         _, frame = self.cap.read()
@@ -39,8 +39,8 @@ class Camera:
             return -1
         car.find_car(warped)
         shape = warped.shape
-        if car.x_location < 0 or car.y_location < 0:
-            return 0.5, 0.5
+        # if car.x_location < 0 or car.y_location < 0:
+        #     return 0.05, 0.05
         relative_x = 1 - (car.x_location / shape[1])
         relative_y = (car.y_location / shape[0])
         return relative_x, relative_y
